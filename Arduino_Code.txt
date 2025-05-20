@@ -1,0 +1,78 @@
+#include <Arduino.h>
+unsigned int localPort = 2390;
+char packetBuffer[255];
+int sensorPin1 = 3;
+int sensorPin2 = 2;
+// const int motorPin1 = 9;  // Right motor control
+// const int motorPin2 = 10; // Right motor control
+// const int motorPin3 = 5;  // Left motor control
+// const int motorPin4 = 6;  // Left motor control
+int pin1_motor_R = 9;
+int pin2_motor_R = 10;
+int pin1_motor_L = 5;
+int pin2_motor_L = 6;
+int ValSensor1 = 0;
+int ValSensor2 = 0;
+char driveMode = 'a';
+void setup() {
+  pinMode(sensorPin1, INPUT);
+  pinMode(sensorPin2, INPUT);
+  pinMode(pin1_motor_R, OUTPUT);
+  pinMode(pin2_motor_R, OUTPUT);
+  pinMode(pin1_motor_L, OUTPUT);
+  pinMode(pin2_motor_L, OUTPUT);
+  Serial.begin(115200);
+}
+void loop() {
+  // Your main loop code
+  if (driveMode == 'a') {
+    SensorDrive();
+  }
+}
+void Forward() {
+  analogWrite(pin1_motor_R, 100);
+  analogWrite(pin2_motor_R, 0);
+  analogWrite(pin1_motor_L, 100);
+  analogWrite(pin2_motor_L, 0);
+  Serial.println("Forward");
+}
+void Left() {
+  analogWrite(pin1_motor_R, 100);
+  analogWrite(pin2_motor_R, 0);
+  analogWrite(pin1_motor_L, 0);
+  analogWrite(pin2_motor_L, 80);
+  Serial.println("L");
+}
+void Right() {
+  analogWrite(pin1_motor_R, 0);
+  analogWrite(pin2_motor_R, 80);
+  analogWrite(pin1_motor_L, 100);
+  analogWrite(pin2_motor_L, 0);
+  Serial.println("R");
+}
+void Stop() {
+  analogWrite(pin1_motor_R, 0);
+  analogWrite(pin2_motor_R, 0);
+  analogWrite(pin1_motor_L, 0);
+  analogWrite(pin2_motor_L, 0);
+}
+void SensorDrive() 
+{
+  ValSensor1 = digitalRead(sensorPin1);
+  ValSensor2 = digitalRead(sensorPin2);
+  if (ValSensor1 == LOW && ValSensor2 == HIGH ) 
+  {
+    Left();
+  } 
+  else if (ValSensor2 == LOW && ValSensor1 == HIGH ) 
+  {
+    Right();
+  } 
+  else if (ValSensor2 == LOW && ValSensor1 == LOW ) {
+    Forward();
+  } 
+  else 
+  {
+    Stop();
+  }
+}
